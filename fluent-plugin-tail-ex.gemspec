@@ -14,4 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "fluent-plugin-tail-ex"
   gem.require_paths = ["lib"]
   gem.version       = "0.0.1"
+
+  gem.add_development_dependency "fluentd"
+  gem.add_runtime_dependency "fluentd"
 end
