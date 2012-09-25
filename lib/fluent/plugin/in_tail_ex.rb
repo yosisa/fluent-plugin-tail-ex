@@ -88,7 +88,7 @@ module Fluent
       def initialize(path, rotate_wait, pe, &receive_lines)
         @parent_receive_lines = receive_lines
         super(path, rotate_wait, pe, &method(:_receive_lines))
-        @close_trigger = TimerWatcher.new(rotate_wait, false, &method(:read_and_close))
+        @close_trigger = TimerWatcher.new(rotate_wait * 2, false, &method(:_close))
       end
 
       def _receive_lines(lines)
@@ -97,15 +97,16 @@ module Fluent
       end
 
       def close(loop)
+        @close_trigger.attach(loop)
+      end
+
+      def _close
         @rotate_queue.reject! do |req|
           req.io.close if req.io
           true
         end
         detach
-        @close_trigger.attach(loop)
-      end
 
-      def read_and_close
         @io_handler.on_notify
         @io_handler.close
         $log.info "stop following of #{@path}"
