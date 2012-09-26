@@ -19,7 +19,7 @@ module Fluent
       @refresh_trigger = TailWatcher::TimerWatcher.new(@refresh_interval, true, &method(:refresh_watchers))
     end
 
-    def extend_paths
+    def expand_paths
       paths = []
       for path in @paths
         if @expand_date
@@ -31,7 +31,7 @@ module Fluent
     end
 
     def refresh_watchers
-      paths = extend_paths
+      paths = expand_paths
       missing = @watchers.keys - paths
       added = paths - @watchers.keys
 
