@@ -58,11 +58,11 @@ module Fluent
       end
     end
 
-    def stop_watch(paths)
+    def stop_watch(paths, immediate=false)
       paths.each do |path|
         watcher = @watchers.delete(path)
         if watcher
-          watcher.close(@loop)
+          watcher.close(immediate ? nil : @loop)
         end
       end
     end
@@ -81,7 +81,7 @@ module Fluent
 
     def shutdown
       @refresh_trigger.detach
-      stop_watch(@watchers.keys)
+      stop_watch(@watchers.keys, true)
       @loop.stop
       @thread.join
       @pf_file.close if @pf_file
@@ -99,21 +99,22 @@ module Fluent
         @parent_receive_lines.call(lines, tag)
       end
 
-      def close(loop)
-        @close_trigger.attach(loop)
+      def close(loop=nil)
+        detach                  # detach first to avoid timer conflict
+        if loop
+          @close_trigger.attach(loop)
+        else
+          _close
+        end
       end
 
       def _close
-        @rotate_queue.reject! do |req|
-          req.io.close if req.io
-          true
-        end
-        detach
+        @close_trigger.detach if @close_trigger.attached?
+        self.class.superclass.instance_method(:close).bind(self).call
 
         @io_handler.on_notify
         @io_handler.close
         $log.info "stop following of #{@path}"
-        @close_trigger.detach
       end
     end
   end
