@@ -1,29 +1,18 @@
-# Fluent::Plugin::Tail::Ex
+# fluent-plugin-tail-ex
 
-TODO: Write a gem description
+This fluentd plugin provides `tail_ex` input plugin.
+In addition to in_tail plugin features, the plugin support more feature for comfortable.
+
+A main feature of the plugin is support path parameter expansions.
+A path parameter can be configured using glob and/or time format (strftime).
+Furthermore, the plugin append file path to the configured tag.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'fluent-plugin-tail-ex'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Install it using gem:
 
     $ gem install fluent-plugin-tail-ex
 
-## Usage
+## Configuration
 
 TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
