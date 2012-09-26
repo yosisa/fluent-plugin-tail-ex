@@ -77,3 +77,23 @@ refresh_interval 30
     end
   end
 end
+
+
+class TailExWatcherTest < Test::Unit::TestCase
+  def setup
+    @tag = nil
+    @lines = nil
+    @watcher = Fluent::TailExInput::TailExWatcher.new('/var/tmp//foo.log', 5, nil, &method(:callback))
+  end
+
+  def callback(lines, tag)
+    @tag = tag
+    @lines = lines
+  end
+
+  def test_receive_lines
+    @watcher.instance_eval { @receive_lines.call(['l1', 'l2']) }
+    assert_equal 'var.tmp.foo.log', @tag
+    assert_equal ['l1', 'l2'], @lines
+  end
+end
