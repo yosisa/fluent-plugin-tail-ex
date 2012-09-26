@@ -22,7 +22,10 @@ unless ENV.has_key?('VERBOSE')
   $log = nulllogger
 end
 
+require 'stringio'
+require 'flexmock'
 require 'fluent/plugin/in_tail_ex'
 
 class Test::Unit::TestCase
+  include FlexMock::TestCase
 end
