@@ -20,10 +20,11 @@ module Fluent
     end
 
     def expand_paths
+      date = Time.now
       paths = []
       for path in @paths
         if @expand_date
-          path = Time.now.strftime(path)
+          path = date.strftime(path)
         end
         paths += Dir.glob(path)
       end
@@ -41,12 +42,14 @@ module Fluent
 
     def start_watch(paths)
       paths.each do |path|
-        pe = @pf ? @pf[path] : NullPositionEntry.instance
-        if @read_all
-          inode = File::Stat.new(path).ino
-          if pe.read_inode == 0
+        if @pf
+          pe = @pf[path]
+          if @read_all && pe.read_inode == 0
+            inode = File::Stat.new(path).ino
             pe.update(inode, 0)
           end
+        else
+          pe = NullPositionEntry.instance
         end
 
         watcher = TailExWatcher.new(path, @rotate_wait, pe, &method(:receive_lines))
