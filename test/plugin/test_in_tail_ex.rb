@@ -80,12 +80,12 @@ refresh_interval 30
   def test_receive_lines
     plugin = create_driver.instance
     flexstub(Fluent::Engine) do |engineclass|
-      engineclass.should_receive(:emit_stream).with('tail_ex.foo.bar.log', any).once
+      engineclass.should_receive(:emit_stream).with('tail_ex', any).once
       plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
     end
 
     config = %[
-      tag pre*
+      tag pre.*
       path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
       format /^(?<message>.*)$/
     ]
@@ -96,7 +96,7 @@ refresh_interval 30
     end
 
     config = %[
-      tag *post
+      tag *.post
       path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
       format /^(?<message>.*)$/
     ]
@@ -107,7 +107,7 @@ refresh_interval 30
     end
 
     config = %[
-      tag pre*post
+      tag pre.*.post
       path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
       format /^(?<message>.*)$/
     ]
@@ -118,7 +118,7 @@ refresh_interval 30
     end
 
     config = %[
-      tag pre*post*ignore
+      tag pre.*.post*ignore
       path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
       format /^(?<message>.*)$/
     ]
