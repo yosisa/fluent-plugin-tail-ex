@@ -1,5 +1,6 @@
 module Fluent
   require 'fluent/plugin/in_tail'
+  require 'fluent/mixin/config_placeholders'
 
   class TailExInput < TailInput
     Plugin.register_input('tail_ex', self)
@@ -7,6 +8,8 @@ module Fluent
     config_param :expand_date, :bool, :default => true
     config_param :read_all, :bool, :default => true
     config_param :refresh_interval, :integer, :default => 3600
+
+    include Fluent::Mixin::ConfigPlaceholders
 
     def initialize
       super
