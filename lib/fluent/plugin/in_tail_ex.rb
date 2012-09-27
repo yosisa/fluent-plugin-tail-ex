@@ -17,7 +17,8 @@ module Fluent
 
     def configure(conf)
       super
-      @tag_prefix = @tag
+      @tag_prefix, @tag_suffix = @tag.split('*')
+      @tag_prefix = nil if @tag_prefix.length == 0
       @watchers = {}
       @refresh_trigger = TailWatcher::TimerWatcher.new(@refresh_interval, true, &method(:refresh_watchers))
     end
@@ -71,7 +72,8 @@ module Fluent
     end
 
     def receive_lines(lines, tag)
-      @tag = @tag_prefix + '.' + tag
+      @tag = @tag_prefix ? @tag_prefix + '.' + tag : tag
+      @tag += '.' + @tag_suffix if @tag_suffix
       super(lines)
     end
 
