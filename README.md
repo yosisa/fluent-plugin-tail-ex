@@ -22,7 +22,7 @@ Below parameters are extended by this plugin:
 
 And, below parameters are added by this plugin:
 
-- expand_date: control weather expand strftime format or not.
+- expand_date: control whether expand strftime format or not.
 - read_all: when new file is found, read from beginning of a file (default), instead of end of file (in_tail).
 - refresh_interval: seconds for re-expand path to find new/old files.
 
