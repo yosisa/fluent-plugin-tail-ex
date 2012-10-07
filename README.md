@@ -7,6 +7,8 @@ A main feature of the plugin is support path parameter expansions.
 A path parameter can be configured using glob and/or date format (strftime).
 Furthermore, the plugin append file path to the configured tag.
 
+Note: In order to pass all tests, this plugin needs fluentd 0.10.26 or above.
+
 ## Installation
 
 Install it using gem:

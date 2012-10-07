@@ -49,7 +49,7 @@ refresh_interval 30
 
       flexstub(Fluent::TailExInput::TailExWatcher) do |watcherclass|
         PATHS.each do |path|
-          watcherclass.should_receive(:new).with(path, 5, Fluent::TailInput::PositionEntry, any).once.and_return do
+          watcherclass.should_receive(:new).with(path, 5, Fluent::TailInput::FilePositionEntry, any).once.and_return do
             flexmock('TailExWatcher') {|watcher| watcher.should_receive(:attach).once}
           end
         end
@@ -61,7 +61,7 @@ refresh_interval 30
       end
 
       flexstub(Fluent::TailExInput::TailExWatcher) do |watcherclass|
-        watcherclass.should_receive(:new).with('test/plugin/data/2010/01/20100102-030406.log', 5, Fluent::TailInput::PositionEntry, any).once.and_return do
+        watcherclass.should_receive(:new).with('test/plugin/data/2010/01/20100102-030406.log', 5, Fluent::TailInput::FilePositionEntry, any).once.and_return do
           flexmock('TailExWatcher') do |watcher|
             watcher.should_receive(:attach).once
             watcher.should_receive(:close).once
