@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "fluent-plugin-tail-ex"
   gem.require_paths = ["lib"]
-  gem.version       = "0.0.1"
+  gem.version       = "0.1.0"
 
   requires = ['fluentd', 'fluent-mixin-config-placeholders']
   requires.each {|name| gem.add_runtime_dependency name}
