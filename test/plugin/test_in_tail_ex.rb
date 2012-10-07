@@ -31,7 +31,7 @@ refresh_interval 30
     flexstub(Time) do |timeclass|
       timeclass.should_receive(:now).with_no_args.and_return(
         Time.new(2010, 1, 2, 3, 4, 5))
-      assert_equal PATHS, plugin.expand_paths
+      assert_equal PATHS, plugin.expand_paths.sort
     end
   end
 
