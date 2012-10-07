@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["yt.hisa@gmail.com"]
   gem.description   = %q{Extended tail input plugin}
   gem.summary       = %q{Extended tail input plugin}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/yosisa/fluent-plugin-tail-ex"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
