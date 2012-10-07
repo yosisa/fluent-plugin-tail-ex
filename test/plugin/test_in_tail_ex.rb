@@ -35,6 +35,24 @@ refresh_interval 30
     end
   end
 
+  def test_start_watch_without_pos_file
+    config = %[
+tag tail_ex
+path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
+format /^(?<message>.*)$/
+refresh_interval 30
+    ]
+    plugin = create_driver(config).instance
+    flexstub(Fluent::TailExInput::TailExWatcher) do |watcherclass|
+      PATHS.each do |path|
+        watcherclass.should_receive(:new).with(path, 5, nil, any).once.and_return do
+          flexmock('TailExWatcher') {|watcher| watcher.should_receive(:attach).once}
+        end
+      end
+      plugin.start_watch(PATHS)
+    end
+  end
+
   def test_refresh_watchers
     plugin = create_driver.instance
     sio = StringIO.new

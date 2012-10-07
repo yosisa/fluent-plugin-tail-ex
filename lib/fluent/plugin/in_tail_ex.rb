@@ -58,7 +58,7 @@ module Fluent
             pe.update(inode, 0)
           end
         else
-          pe = NullPositionEntry.instance
+          pe = nil
         end
 
         watcher = TailExWatcher.new(path, @rotate_wait, pe, &method(:receive_lines))
