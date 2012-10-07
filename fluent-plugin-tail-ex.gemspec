@@ -17,6 +17,6 @@ Gem::Specification.new do |gem|
 
   requires = ['fluentd', 'fluent-mixin-config-placeholders']
   requires.each {|name| gem.add_runtime_dependency name}
-  requires += ['flexmock']
+  requires += ['rake', 'flexmock']
   requires.each {|name| gem.add_development_dependency name}
 end
