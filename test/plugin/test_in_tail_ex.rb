@@ -9,7 +9,7 @@ class TailExInputTest < Test::Unit::TestCase
 tag tail_ex
 path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
 format /^(?<message>.*)$/
-pos_file /var/tmp/fluentd.pos
+pos_file test-pos-file
 refresh_interval 30
   ]
   PATHS = [
@@ -24,6 +24,23 @@ refresh_interval 30
 
   def test_configure
     assert_nothing_raised { create_driver }
+  end
+
+  def test_posfile_creation
+    flexstub(Thread) do |threadclass|
+      threadclass.should_receive(:new).once.and_return do
+        flexmock('Thread') {|t| t.should_receive(:join).once }
+      end
+      threadclass.should_receive(:new).once
+
+      plugin = create_driver.instance
+      plugin.start
+      pf = nil
+      plugin.instance_eval do
+        pf = @pf
+      end
+      assert_instance_of Fluent::TailInput::PositionFile, pf
+    end
   end
 
   def test_expand_paths
