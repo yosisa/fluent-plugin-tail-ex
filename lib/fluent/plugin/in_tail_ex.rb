@@ -13,6 +13,7 @@ module Fluent
 
     def initialize
       super
+      @ready = false
     end
 
     def configure(conf)
@@ -84,9 +85,13 @@ module Fluent
     end
 
     def start
-      @loop = Coolio::Loop.new
+      paths, @paths = @paths, []
+      super
+      @thread.join
+      @paths = paths
       refresh_watchers
       @refresh_trigger.attach(@loop)
+      @ready = true
       @thread = Thread.new(&method(:run))
     end
 
@@ -96,6 +101,13 @@ module Fluent
       @loop.stop
       @thread.join
       @pf_file.close if @pf_file
+    end
+
+    def run
+      # don't run unless ready to avoid coolio error
+      if @ready
+        super
+      end
     end
 
     class TailExWatcher < TailWatcher
