@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Extended tail input plugin}
   gem.summary       = %q{Extended tail input plugin}
   gem.homepage      = "https://github.com/yosisa/fluent-plugin-tail-ex"
+  gem.license       = "Apache 2.0"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
