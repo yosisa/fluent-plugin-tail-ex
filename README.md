@@ -1,4 +1,4 @@
-# fluent-plugin-tail-ex
+# fluent-plugin-tail-ex, a plugin for [Fluentd](http://fluentd.org)
 
 [![Build Status](https://secure.travis-ci.org/yosisa/fluent-plugin-tail-ex.png)](http://travis-ci.org/yosisa/fluent-plugin-tail-ex)
 
