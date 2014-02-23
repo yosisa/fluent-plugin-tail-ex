@@ -8,6 +8,7 @@ module Fluent
     config_param :expand_date, :bool, :default => true
     config_param :read_all, :bool, :default => true
     config_param :refresh_interval, :integer, :default => 3600
+    config_param :path_key, :string, :default => nil
 
     include Fluent::Mixin::ConfigPlaceholders
 
@@ -77,11 +78,35 @@ module Fluent
       end
     end
 
-    def receive_lines(lines, tag)
+    def receive_lines(lines, tag, path)
       if @tag_prefix || @tag_suffix
         @tag = @tag_prefix + tag + @tag_suffix
       end
-      super(lines)
+
+      es = MultiEventStream.new
+      lines.each {|line|
+        begin
+          line.chomp! # remove \n
+          time, record = parse_line(line)
+          if time && record
+            record[@path_key] = path unless @path_key.nil?
+            es.add(time, record)
+          else
+            log.warn "pattern not match: #{line.inspect}"
+          end
+        rescue
+          log.warn line.dump, :error=>$!.to_s
+          log.debug_backtrace
+        end
+      }
+
+      unless es.empty?
+        begin
+          Engine.emit_stream(@tag, es)
+        rescue
+          # ignore errors. Engine shows logs and backtraces.
+        end
+      end
     end
 
     def start
@@ -119,7 +144,7 @@ module Fluent
 
       def _receive_lines(lines)
         tag = @path.tr('/', '.').gsub(/\.+/, '.').gsub(/^\./, '')
-        @parent_receive_lines.call(lines, tag)
+        @parent_receive_lines.call(lines, tag, @path)
       end
 
       def close(loop=nil)

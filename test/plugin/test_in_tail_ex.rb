@@ -116,7 +116,7 @@ refresh_interval 30
     plugin = create_driver.instance
     flexstub(Fluent::Engine) do |engineclass|
       engineclass.should_receive(:emit_stream).with('tail_ex', any).once
-      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log', '/var/log/test')
     end
 
     config = %[
@@ -127,7 +127,7 @@ refresh_interval 30
     plugin = create_driver(config).instance
     flexstub(Fluent::Engine) do |engineclass|
       engineclass.should_receive(:emit_stream).with('pre.foo.bar.log', any).once
-      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log', '/var/log/test')
     end
 
     config = %[
@@ -138,7 +138,7 @@ refresh_interval 30
     plugin = create_driver(config).instance
     flexstub(Fluent::Engine) do |engineclass|
       engineclass.should_receive(:emit_stream).with('foo.bar.log.post', any).once
-      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log', '/var/log/test')
     end
 
     config = %[
@@ -149,7 +149,7 @@ refresh_interval 30
     plugin = create_driver(config).instance
     flexstub(Fluent::Engine) do |engineclass|
       engineclass.should_receive(:emit_stream).with('pre.foo.bar.log.post', any).once
-      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log', '/var/log/test')
     end
 
     config = %[
@@ -160,7 +160,42 @@ refresh_interval 30
     plugin = create_driver(config).instance
     flexstub(Fluent::Engine) do |engineclass|
       engineclass.should_receive(:emit_stream).with('pre.foo.bar.log.post', any).once
-      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log')
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar.log', '/var/log/test')
+    end
+
+    config = %[
+      tag foo.bar1
+      path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
+      format /^(?<message>.*)$/
+    ]
+    plugin = create_driver(config).instance
+    flexstub(Fluent::Engine) do |engineclass|
+      engineclass.should_receive(:emit_stream).with('foo.bar1', on { |es|
+        records = []
+        es.each { |_, rec| records << rec }
+        assert_equal [{'message' => 'foo'}, {'message' => 'bar'}], records
+        true
+      }).once
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar1', '/var/log/test')
+    end
+
+    config = %[
+      tag foo.bar2
+      path_key path
+      path test/plugin/*/%Y/%m/%Y%m%d-%H%M%S.log,test/plugin/data/log/**/*.log
+      format /^(?<message>.*)$/
+    ]
+    plugin = create_driver(config).instance
+    flexstub(Fluent::Engine) do |engineclass|
+      engineclass.should_receive(:emit_stream).with('foo.bar2', on { |es|
+        records = []
+        es.each { |_, rec| records << rec }
+        assert_equal [{'message' => 'foo', 'path' => '/var/log/test'},
+                      {'message' => 'bar', 'path' => '/var/log/test'}],
+                     records
+        true
+      }).once
+      plugin.receive_lines(['foo', 'bar'], 'foo.bar2', '/var/log/test')
     end
   end
 end
@@ -173,9 +208,10 @@ class TailExWatcherTest < Test::Unit::TestCase
     @watcher = Fluent::TailExInput::TailExWatcher.new('/var/tmp//foo.log', 5, nil, &method(:callback))
   end
 
-  def callback(lines, tag)
+  def callback(lines, tag, path)
     @tag = tag
     @lines = lines
+    @path = path
   end
 
   def test_receive_lines
