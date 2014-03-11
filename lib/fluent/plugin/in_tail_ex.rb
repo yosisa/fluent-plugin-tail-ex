@@ -89,7 +89,7 @@ module Fluent
           line.chomp! # remove \n
           time, record = parse_line(line)
           if time && record
-            record[@path_key] = path unless @path_key.nil?
+            record[@path_key] ||= path unless @path_key.nil?
             es.add(time, record)
           else
             log.warn "pattern not match: #{line.inspect}"
