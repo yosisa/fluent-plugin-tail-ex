@@ -2,6 +2,8 @@
 
 [![Build Status](https://secure.travis-ci.org/yosisa/fluent-plugin-tail-ex.png)](http://travis-ci.org/yosisa/fluent-plugin-tail-ex)
 
+**Deprecated: Fluentd has the features of this plugin since 0.10.45. So, the plugin no longer maintained.**
+
 fluent-plugin-tail-ex provides `tail_ex` input plugin.
 In addition to in_tail plugin features, this plugin support more feature for comfortable.
 
